@@ -9,19 +9,21 @@
     "url": ""
   },
   "engines": {
-    "node": "~0.6.10 || 0.8 || 0.9"
+    "node": ">= 0.10"
   },
   "scripts": {
     "start": "brunch watch --server"
   },
   "dependencies": {
-    "javascript-brunch": ">= 1.0 < 2.0",
-    "coffee-script-brunch": ">= 1.0 < 2.0",
-    "css-brunch": ">= 1.0 < 2.0",
-    "uglify-js-brunch": ">= 1.0 < 2.0",
-    "clean-css-brunch": ">= 1.0 < 2.0",
+    "javascript-brunch": ">= 1.0",
+    "coffee-script-brunch": ">= 1.0",
+    "css-brunch": ">= 1.0",
+    "uglify-js-brunch": ">= 1.0",
+    "clean-css-brunch": ">= 1.0",
     "sass-brunch": "1.6",
-    "ember-handlebars-brunch": ">=1.0.0"
+    "ember-handlebars-brunch": ">=1.0.0",
+    "auto-reload-brunch": ">= 1.6",
+    "commonjs-require-definition":""
   },
   "devDependencies": {
     "mocha": "0.14.0",

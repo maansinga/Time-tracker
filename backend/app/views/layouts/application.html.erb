@@ -1,14 +1,32 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Timeline</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Timeline</title>
+    <%= csrf_meta_tags %>
 
-<%= yield %>
+	<link rel="stylesheet" href="/stylesheets/app.css">
+<!--Ember requirements TODO:-->
+	<meta charset="utf-8">
+	<script src="/javascripts/vendor.js"></script>
+	<script src="/javascripts/app.js"></script>
+	<script>require('initialize');</script>
 
-</body>
+
+	<!-- csrf token handelling -->
+	<script type="text/javascript">
+		// Setting the Csrf token for all post requests.
+		window.onload = function(){
+			$(document).ajaxSend(function(e, xhr, options) {
+				var token = $("meta[name='csrf-token']").attr("content");
+				xhr.setRequestHeader("X-CSRF-Token", token);
+			});
+		}
+
+	</script>
+
+  </head>
+  <body>
+    
+  </body>
 </html>

@@ -2,6 +2,8 @@ fs   = require 'fs'
 path = require 'path'
 
 exports.config =
+  paths:
+    'public': "../backend/public"
   files:
     javascripts:
       defaultExtension: 'coffee'
@@ -24,9 +26,6 @@ exports.config =
       root: 'templates'
       defaultExtension: 'hbs'
       joinTo: 'javascripts/app.js' : /^app/
-  modules:
-    wrapper: false
-    definition: false
   conventions:
     ignored: (filePath) ->
       if filePath.indexOf(path.join 'app', 'templates') == 0
