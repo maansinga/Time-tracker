@@ -1,0 +1,67 @@
+.task{
+	position:relative;
+	padding:0px 5px;
+	width:400px;
+	height:200px;
+	background-color:#fff;
+	border:solid 1px #222;
+	margin:10px 10px;
+	float:left;
+	border-radius: 5px;
+	h3{
+		text-align: center;
+		margin-top:0px;
+		margin-bottom:0px;
+		border-bottom: solid 1px #ccc;
+	}
+	.labeled{
+		padding:2.5px 2.5px;
+		margin-top:5px;
+		margin-bottom:5px;
+
+		width:70%;
+		float:left;
+	}
+	label{
+		width:20%;
+		float:left;
+		margin-top:12.5px;
+	}
+}
+.full-width{
+	width:100%;
+	display: inline-block;
+	*{
+		display: inline-block;
+	}	
+}
+button button.tiny, .button.tiny {
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	font-size: 0.6875rem;
+	outline:none;
+	transition:all 0.2s ease-in-out;
+	&:hover{
+		text-shadow: 0px 0px 4px #fff;
+	}
+	&:active{
+		box-shadow: inset 0px 0px 4px #333;	
+	}
+}
+
+.checkbox{
+	background-image: none;
+	border: none;
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.t-controls{
+	position:absolute;
+	bottom:0px;
+}

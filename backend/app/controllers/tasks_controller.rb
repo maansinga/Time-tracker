@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
 	def permitted_params(params)
-	  params.require(:task).permit(:name, :description)
+	  params.require(:task).permit(:name, :description, :completed)
 	end
 	def index
 		@tasks=Task.all
@@ -16,6 +16,22 @@ class TasksController < ApplicationController
 			render json: @task,status: :ok
 		else
 			render json: nil,status: :unacceptable
+		end
+	end
+	def update
+		@task=Task.find params[:id]
+		if @task.update_attributes permitted_params(params)
+			render json: @task,status: :ok
+		else
+			render json: nil,status: :error
+		end
+	end
+	def destroy
+		@task=Task.find params[:id]
+		if @task.destroy
+			render json: nil,status: :ok
+		else
+			render json: nil,status: :error
 		end
 	end
 end

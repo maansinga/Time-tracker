@@ -1,0 +1,28 @@
+<div {{bind-attr class=':task isCompleted:completed:not-completed'}}>
+
+	{{#unless view.isEditing}}
+		{{#if this.isNew}}
+			<label>New Task</label>
+			<p></p>
+			<div class='t-controls'>
+				<button class='button tiny' {{action 'edit' target='view'}}>New</button>
+			</div>
+		{{else}}
+			<div class="full-width"><label>Name</label><h5 class='labeled'>{{name}}</h5></div>
+			<div class="full-width"><label>Description</label><p class='labeled'>{{description}}</p></div>
+			<div class='t-controls'>
+				<button class='button tiny' {{action 'edit' target='view'}}>Edit</button>
+				<button class='button tiny' {{action 'complete' target='view'}}>
+					{{#if isCompleted}}
+						Incomplete
+					{{else}}
+						Complete
+					{{/if}}
+				</button>
+				<button class='button tiny alert' {{action 'destroyTask'}}>Delete</button>
+			</div>
+		{{/if}}
+	{{else}}
+		{{partial 'tasks/form'}}
+	{{/unless}}
+</div>
