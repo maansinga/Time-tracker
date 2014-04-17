@@ -95,7 +95,7 @@ var App;
 
 module.exports = App = window.App = Ember.Application.create({
   LOG_TRANSITIONS: true,
-  LOG_VIEW_LOOKUPS: true
+  LOG_TRANSITIONS_INTERNAL: true
 });
 
 App.ApplicationStore = DS.Store.extend({
@@ -120,7 +120,31 @@ var App;
 
 App = require('app');
 
-App.TasksController = Em.ArrayController.extend();
+App.TasksController = Em.ArrayController.extend({
+  parentTask: null,
+  newTask: null,
+  tasks: (function() {
+    if (Em.isEmpty(this.get('parentTask'))) {
+      return this.store.find('task', {
+        parent_id: null
+      });
+    } else {
+      return this.get('parentTask.tasks');
+    }
+  }).property('parentTask', 'parentTask.tasks.length'),
+  reload: function() {
+    var parentTask;
+    parentTask = this.get('parentTask');
+    this.set('newTask', this.store.createRecord('task'));
+    if (!Em.isEmpty(parentTask)) {
+      return this.get('newTask').set('parent_id', parentTask.get('id'));
+    } else {
+      return this.set('tasks', this.store.find('task', {
+        parent_id: null
+      }));
+    }
+  }
+});
 });
 
 ;require.register("controllers/tasks/task", function(exports, require, module) {
@@ -130,6 +154,13 @@ App = require('app');
 
 App.TaskController = Em.ObjectController.extend({
   needs: ['tasks'],
+  completeButtonMessage: (function() {
+    if (this.get('model.completed')) {
+      return 'Reopen';
+    } else {
+      return 'Complete';
+    }
+  }).property('model.completed'),
   actions: {
     saveTask: function() {
       var idExists, store, tasksController;
@@ -138,7 +169,7 @@ App.TaskController = Em.ObjectController.extend({
       store = this.store;
       return this.get('model').save().then(function(model) {
         if (idExists) {
-          return tasksController.set('newTask', store.createRecord('task'));
+          return tasksController.reload();
         }
       });
     },
@@ -146,7 +177,11 @@ App.TaskController = Em.ObjectController.extend({
       return this.get('model').toggleComplete();
     },
     destroyTask: function() {
-      return this.get('model').destroyRecord();
+      var tasksController;
+      tasksController = this.get('controllers.tasks');
+      return this.get('model').destroyRecord().then(function() {
+        return tasksController.reload();
+      });
     }
   }
 });
@@ -183,8 +218,13 @@ App.Task = DS.Model.extend({
   name: DS.attr('string'),
   description: DS.attr('string'),
   completed: DS.attr('boolean'),
-  task: DS.belongsTo('task'),
-  tasks: DS.hasMany('task'),
+  parent: DS.belongsTo('task', {
+    inverse: 'tasks'
+  }),
+  tasks: DS.hasMany('task', {
+    async: true,
+    inverse: 'parent'
+  }),
   isCompleted: (function() {
     return this.get('completed');
   }).property('completed'),
@@ -192,7 +232,6 @@ App.Task = DS.Model.extend({
     return Em.isEmpty(this.get('id'));
   }).property('id'),
   toggleComplete: function() {
-    console.log('calling toggle complete');
     this.set('completed', !this.get('completed'));
     return this.save();
   }
@@ -206,8 +245,8 @@ App = require('app');
 
 App.Router.map(function() {
   return this.resource('tasks', function() {
-    return this.route('task', {
-      path: 'tasks/:id'
+    return this.resource('task', {
+      path: '/:id'
     });
   });
 });
@@ -215,6 +254,29 @@ App.Router.map(function() {
 
 ;require.register("routes", function(exports, require, module) {
 require('routes/tasks');
+
+require('routes/task');
+});
+
+;require.register("routes/task", function(exports, require, module) {
+var App;
+
+App = require('app');
+
+App.TaskRoute = Em.Route.extend({
+  deactivate: function() {
+    this.controllerFor('tasks').set('parentTask', null);
+    this.controllerFor('tasks').set('newTask.parent', null);
+    return console.log('deactivating');
+  },
+  model: function(params) {
+    return this.store.find('task', params['id']);
+  },
+  setupController: function(controller, model) {
+    this.controllerFor('tasks').set('parentTask', model);
+    return this.controllerFor('tasks').set('newTask.parent', model);
+  }
+});
 });
 
 ;require.register("routes/tasks", function(exports, require, module) {
@@ -223,14 +285,11 @@ var App;
 App = require('app');
 
 App.TasksRoute = Em.Route.extend({
-  model: function() {
-    return this.store.find('task');
-  },
   setupController: function(controller, model) {
-    return controller.setProperties({
-      model: model,
-      newTask: this.store.createRecord('task')
-    });
+    controller.set('parentTask', null);
+    if (Em.isEmpty(controller.get('newTask'))) {
+      return controller.set('newTask', this.store.createRecord('task'));
+    }
   }
 });
 });
@@ -252,7 +311,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', hashTypes, hashContexts, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<h1 class='heading'>Timeline</h1>\n");
+  data.buffer.push("<div id='background'></div>\n<h1 class='heading'>Timeline</h1>\n");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "outlet", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
@@ -265,25 +324,77 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 module.exports = Ember.TEMPLATES['tasks'] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var stack1, hashTypes, hashContexts, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+  var buffer = '', stack1, hashTypes, hashContexts, options, self=this, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
+  
+  var buffer = '', stack1, stack2, hashContexts, hashTypes, options;
+  data.buffer.push("\n	");
+  hashContexts = {'class': depth0};
+  hashTypes = {'class': "STRING"};
+  options = {hash:{
+    'class': ("float-left")
+  },inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || (depth0 && depth0['link-to'])),stack1 ? stack1.call(depth0, "tasks", options) : helperMissing.call(depth0, "link-to", "tasks", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("<br/><br/>\n	<h2>Parent task</h2>\n	");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers.render || (depth0 && depth0.render)),stack1 ? stack1.call(depth0, "task", "parentTask", options) : helperMissing.call(depth0, "render", "task", "parentTask", options))));
+  data.buffer.push("\n	<h2>Sub tasks</h2>\n");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  data.buffer.push("Tasks Home");
+  }
+
+function program4(depth0,data) {
+  
+  
+  data.buffer.push("\n	<h2>Main tasks</h2>\n");
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = '', stack1, hashTypes, hashContexts;
+  data.buffer.push("\n	");
+  hashTypes = {};
+  hashContexts = {};
+  stack1 = helpers.unless.call(depth0, "task.isNew", {hash:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  return buffer;
+  }
+function program7(depth0,data) {
   
   var buffer = '', stack1, hashTypes, hashContexts, options;
   data.buffer.push("\n	");
   hashTypes = {};
   hashContexts = {};
   options = {hash:{},contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  data.buffer.push(escapeExpression(((stack1 = helpers.render || (depth0 && depth0.render)),stack1 ? stack1.call(depth0, "task", "", options) : helperMissing.call(depth0, "render", "task", "", options))));
-  data.buffer.push("\n");
+  data.buffer.push(escapeExpression(((stack1 = helpers.render || (depth0 && depth0.render)),stack1 ? stack1.call(depth0, "task", "task", options) : helperMissing.call(depth0, "render", "task", "task", options))));
+  data.buffer.push("\n	");
   return buffer;
   }
 
   hashTypes = {};
   hashContexts = {};
-  stack1 = helpers.each.call(depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  stack1 = helpers['if'].call(depth0, "controller.parentTask", {hash:{},inverse:self.program(4, program4, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  else { data.buffer.push(''); }
+  data.buffer.push("\n\n");
+  hashTypes = {};
+  hashContexts = {};
+  stack1 = helpers.each.call(depth0, "task", "in", "tasks", {hash:{},inverse:self.noop,fn:self.program(6, program6, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n\n<br style='clear:left;'/>\n");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers.render || (depth0 && depth0.render)),stack1 ? stack1.call(depth0, "task", "newTask", options) : helperMissing.call(depth0, "render", "task", "newTask", options))));
+  return buffer;
   
 });
 });
@@ -295,29 +406,31 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, hashContexts, hashTypes, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<div class='form'>\n	<div class=\"full-width\">\n		<label>Name</label>");
-  hashContexts = {'value': depth0,'class': depth0};
-  hashTypes = {'value': "ID",'class': "STRING"};
+  data.buffer.push("<div class='form'>\n	<div class=\"t-controls\">\n		");
+  hashContexts = {'value': depth0,'class': depth0,'placeholder': depth0};
+  hashTypes = {'value': "ID",'class': "STRING",'placeholder': "STRING"};
   options = {hash:{
     'value': ("name"),
-    'class': ("labeled")
+    'class': ("float-left"),
+    'placeholder': ("Name")
   },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   data.buffer.push(escapeExpression(((stack1 = helpers.input || (depth0 && depth0.input)),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n	</div>\n	<div class=\"full-width\">\n		<label>Description</label>");
-  hashContexts = {'value': depth0,'class': depth0};
-  hashTypes = {'value': "ID",'class': "STRING"};
+  data.buffer.push("\n		");
+  hashContexts = {'value': depth0,'class': depth0,'placeholder': depth0};
+  hashTypes = {'value': "ID",'class': "STRING",'placeholder': "STRING"};
   options = {hash:{
     'value': ("description"),
-    'class': ("labeled")
+    'class': ("float-left"),
+    'placeholder': ("Description")
   },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   data.buffer.push(escapeExpression(((stack1 = helpers.input || (depth0 && depth0.input)),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n	</div>\n	<div class=\"t-controls\">\n		<button class='button tiny' ");
+  data.buffer.push("\n		<button class='button float-right' ");
   hashContexts = {'target': depth0};
   hashTypes = {'target': "STRING"};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "cancel", {hash:{
     'target': ("view")
   },contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(">Cancel</button>\n		<button class='button tiny success' ");
+  data.buffer.push(">Cancel</button>\n		<button class='button float-right' ");
   hashContexts = {'target': depth0};
   hashTypes = {'target': "STRING"};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "edit", {hash:{
@@ -349,45 +462,52 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = '', hashContexts, hashTypes;
-  data.buffer.push("\n			<label>New Task</label>\n			<p></p>\n			<div class='t-controls'>\n				<button class='button tiny' ");
+  data.buffer.push("\n			<div class='t-controls'>\n				<button class='button float-left' ");
   hashContexts = {'target': depth0};
   hashTypes = {'target': "STRING"};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "edit", {hash:{
     'target': ("view")
   },contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(">New</button>\n			</div>\n		");
+  data.buffer.push(">New Task</button>\n			</div>\n		");
   return buffer;
   }
 
 function program4(depth0,data) {
   
-  var buffer = '', stack1, hashTypes, hashContexts;
-  data.buffer.push("\n			<div class=\"full-width\"><label>Name</label><h5 class='labeled'>");
-  hashTypes = {};
-  hashContexts = {};
-  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "name", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</h5></div>\n			<div class=\"full-width\"><label>Description</label><p class='labeled'>");
-  hashTypes = {};
-  hashContexts = {};
-  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "description", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</p></div>\n			<div class='t-controls'>\n				<button class='button tiny' ");
-  hashContexts = {'target': depth0};
-  hashTypes = {'target': "STRING"};
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "edit", {hash:{
-    'target': ("view")
-  },contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(">Edit</button>\n				<button class='button tiny' ");
+  var buffer = '', stack1, stack2, hashContexts, hashTypes, options;
+  data.buffer.push("\n			\n			<div class='t-controls'>\n				<button class='float-left' ");
   hashContexts = {'target': depth0};
   hashTypes = {'target': "STRING"};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "complete", {hash:{
     'target': ("view")
   },contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(">\n					");
+  data.buffer.push(">");
   hashTypes = {};
   hashContexts = {};
-  stack1 = helpers['if'].call(depth0, "isCompleted", {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n				</button>\n				<button class='button tiny alert' ");
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "controller.completeButtonMessage", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</button>\n				");
+  hashContexts = {'class': depth0};
+  hashTypes = {'class': "STRING"};
+  options = {hash:{
+    'class': ("t-link-task float-left")
+  },inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || (depth0 && depth0['link-to'])),stack1 ? stack1.call(depth0, "task", "", options) : helperMissing.call(depth0, "link-to", "task", "", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("\n				<span class='t-description float-left'>");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "description", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</span>\n				<span class='t-parentname float-left'>");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "parent.name", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</span>\n\n				<button class='float-right' ");
+  hashContexts = {'target': depth0};
+  hashTypes = {'target': "STRING"};
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "edit", {hash:{
+    'target': ("view")
+  },contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(">Edit</button>\n				<button class='float-right' ");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "destroyTask", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
@@ -396,17 +516,13 @@ function program4(depth0,data) {
   }
 function program5(depth0,data) {
   
-  
-  data.buffer.push("\n						Incomplete\n					");
+  var hashTypes, hashContexts;
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "name", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   }
 
 function program7(depth0,data) {
-  
-  
-  data.buffer.push("\n						Complete\n					");
-  }
-
-function program9(depth0,data) {
   
   var buffer = '', stack1, hashTypes, hashContexts, options;
   data.buffer.push("\n		");
@@ -428,7 +544,7 @@ function program9(depth0,data) {
   data.buffer.push(">\n\n	");
   hashTypes = {};
   hashContexts = {};
-  stack2 = helpers.unless.call(depth0, "view.isEditing", {hash:{},inverse:self.program(9, program9, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  stack2 = helpers.unless.call(depth0, "view.isEditing", {hash:{},inverse:self.program(7, program7, data),fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n</div>");
   return buffer;

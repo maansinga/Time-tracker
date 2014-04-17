@@ -1,12 +1,8 @@
 <div class='form'>
-	<div class="full-width">
-		<label>Name</label>{{input value=name class='labeled'}}
-	</div>
-	<div class="full-width">
-		<label>Description</label>{{input value=description class='labeled'}}
-	</div>
 	<div class="t-controls">
-		<button class='button tiny' {{action 'cancel' target='view'}}>Cancel</button>
-		<button class='button tiny success' {{action 'edit' target='view'}}>Save</button>
+		{{input value=name class='float-left' placeholder='Name'}}
+		{{input value=description class='float-left' placeholder='Description'}}
+		<button class='button float-right' {{action 'cancel' target='view'}}>Cancel</button>
+		<button class='button float-right' {{action 'edit' target='view'}}>Save</button>
 	</div>
 </div>

@@ -4,8 +4,12 @@ App.Task=DS.Model.extend
 	name: DS.attr 'string'
 	description: DS.attr 'string'
 	completed:DS.attr 'boolean'
-	task: DS.belongsTo 'task'
-	tasks: DS.hasMany 'task'
+	parent: DS.belongsTo 'task',
+		inverse: 'tasks'
+	tasks: DS.hasMany 'task',
+		async:true
+		inverse:'parent'
+
 	#I need this for CSS
 	isCompleted:(->
 		@get 'completed'
@@ -14,6 +18,5 @@ App.Task=DS.Model.extend
 	isNew:(-> Em.isEmpty @get 'id').property('id')
 
 	toggleComplete:->
-		console.log 'calling toggle complete'
 		@set 'completed',!@get 'completed'
 		@save()

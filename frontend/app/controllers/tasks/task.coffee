@@ -2,6 +2,13 @@ App=require 'app'
 
 App.TaskController=Em.ObjectController.extend
 	needs:['tasks']
+	completeButtonMessage:(->
+			if @get 'model.completed'
+				'Reopen'
+			else
+				'Complete'
+	).property('model.completed')
+
 	actions:
 		saveTask:->
 				idExists=Em.isEmpty @get 'model.id'
@@ -9,8 +16,10 @@ App.TaskController=Em.ObjectController.extend
 				store=@store
 				@get('model').save().then (model)->
 					if idExists
-						tasksController.set 'newTask',store.createRecord 'task'
+						tasksController.reload()
 		completeTask:->
 				@get('model').toggleComplete()
 		destroyTask:->
-				@get('model').destroyRecord()
+				tasksController=@get('controllers.tasks')
+				@get('model').destroyRecord().then ->
+					tasksController.reload()

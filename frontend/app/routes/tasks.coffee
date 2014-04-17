@@ -1,9 +1,7 @@
 App=require 'app'
 
 App.TasksRoute=Em.Route.extend
-	model:->
-		@store.find 'task'
 	setupController:(controller,model)->
-		controller.setProperties
-			model:model
-			newTask:@store.createRecord('task')
+		controller.set 'parentTask',null
+		if Em.isEmpty controller.get 'newTask'
+			controller.set 'newTask',@store.createRecord('task')

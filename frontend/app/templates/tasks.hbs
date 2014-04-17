@@ -1,3 +1,17 @@
-{{#each}}
-	{{render 'task' this}}
+{{#if controller.parentTask}}
+	{{#link-to 'tasks' class='float-left'}}Tasks Home{{/link-to}}<br/><br/>
+	<h2>Parent task</h2>
+	{{render 'task' parentTask}}
+	<h2>Sub tasks</h2>
+{{else}}
+	<h2>Main tasks</h2>
+{{/if}}
+
+{{#each task in tasks}}
+	{{#unless task.isNew}}
+	{{render 'task' task}}
+	{{/unless}}
 {{/each}}
+
+<br style='clear:left;'/>
+{{render 'task' newTask}}

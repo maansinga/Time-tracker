@@ -1,9 +1,13 @@
 class TasksController < ApplicationController
 	def permitted_params(params)
-	  params.require(:task).permit(:name, :description, :completed, :task_id)
+	  params.require(:task).permit(:name, :description, :completed, :parent_id)
 	end
 	def index
-		@tasks=Task.all
+		if params.has_key? :ids
+			@tasks=Task.find params[:ids]
+		else
+			@tasks=Task.where parent_id: nil
+		end
 		render json: @tasks
 	end
 	def show

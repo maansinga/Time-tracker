@@ -1,13 +1,15 @@
 .task{
-	position:relative;
-	padding:0px 5px;
-	width:400px;
-	height:200px;
-	background-color:#fff;
-	border:solid 1px #222;
-	margin:10px 10px;
-	float:left;
-	border-radius: 5px;
+	position: relative;
+	padding: 3px 10px;
+	padding-bottom: 0px;
+	width: calc(100% - 20px);
+	height: 25px;
+	background-color: #CCC;
+	margin: 1px 0px;
+	float: left;
+	border: 1px solid #AAA;
+	border-radius: 2px;
+	border-bottom: solid 2px rgba(255, 78, 78, 1);
 	h3{
 		text-align: center;
 		margin-top:0px;
@@ -22,11 +24,21 @@
 		width:70%;
 		float:left;
 	}
-	label{
-		width:20%;
+	.label{
+		width:40px;
 		float:left;
 		margin-top:12.5px;
+		display: inline-block;
 	}
+	&.completed{
+		border-bottom: solid 2px #389957;
+	}
+}
+.float-left{
+	float:left;
+}
+.float-right{
+	float:right;
 }
 .full-width{
 	width:100%;
@@ -35,22 +47,6 @@
 		display: inline-block;
 	}	
 }
-button button.tiny, .button.tiny {
-	padding-top: 10px;
-	padding-right: 10px;
-	padding-bottom: 10px;
-	padding-left: 10px;
-	font-size: 0.6875rem;
-	outline:none;
-	transition:all 0.2s ease-in-out;
-	&:hover{
-		text-shadow: 0px 0px 4px #fff;
-	}
-	&:active{
-		box-shadow: inset 0px 0px 4px #333;	
-	}
-}
-
 .checkbox{
 	background-image: none;
 	border: none;
@@ -62,6 +58,59 @@ button button.tiny, .button.tiny {
 }
 
 .t-controls{
-	position:absolute;
-	bottom:0px;
+	height: 100%;
+	width: 100%;
+	vertical-align: middle;
+	display: block;
+	*{
+		height:inherit;
+	}
+	input,span,a{
+		margin-top:2px;
+		min-width:80px;
+		margin-right: 5px;
+		margin-left: 5px;
+		overflow: ellipses;
+	}
+	input{
+		margin-top:0px;
+	}
+}
+
+button,.button{
+	max-width: 100px;
+	min-width: 60px;
+	min-height:20px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	line-height: 1;
+	margin-top: 0px;
+	outline: none;
+	background-color: #4D485F;
+	border: none;
+	margin-left: 2px;
+	margin-right: 2px;
+	color: #fff;
+	font-weight: bold;
+	font-size: 10px;
+
+	&:hover{
+		text-shadow:0px 0px 1px #222;
+		box-shadow: 0px 0px 2px #aaa;
+	}
+
+	&:active{
+		box-shadow: inset 0px 0px 2px #2E8F40;
+		color: #fff;
+		text-shadow:0px 0px 1px 2px #222;
+	}
+}
+
+a{
+	text-decoration: none;
+	color:#fff;
+	text-shadow:0px 0px 1px #222;
+	font-size: 14px;
+	border-bottom:solid 2px #eee;
+	text-align: center;
 }
