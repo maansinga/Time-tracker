@@ -183,6 +183,8 @@ App.Task = DS.Model.extend({
   name: DS.attr('string'),
   description: DS.attr('string'),
   completed: DS.attr('boolean'),
+  task: DS.belongsTo('task'),
+  tasks: DS.hasMany('task'),
   isCompleted: (function() {
     return this.get('completed');
   }).property('completed'),

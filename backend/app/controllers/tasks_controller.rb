@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
 	def permitted_params(params)
-	  params.require(:task).permit(:name, :description, :completed)
+	  params.require(:task).permit(:name, :description, :completed, :task_id)
 	end
 	def index
 		@tasks=Task.all
