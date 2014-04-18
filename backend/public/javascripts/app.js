@@ -138,7 +138,7 @@ App.TasksController = Em.ArrayController.extend({
     this.set('newTask', this.store.createRecord('task'));
     if (!Em.isEmpty(parentTask)) {
       console.log('iufhidsuhfidsufhidsufhsiduhfidsufhsidufh');
-      this.set('parentTask', this.store.find('task', parentTask.get('id')));
+      parentTask.reload();
       return this.get('newTask').set('parent_id', parentTask.get('id'));
     } else {
       return this.set('tasks', this.store.find('task', {
@@ -174,6 +174,7 @@ App.TaskController = Em.ObjectController.extend({
       tasksController = this.get('controllers.tasks');
       store = this.store;
       return model.save().then(function(model) {
+        console.log('created new model');
         return tasksController.reload();
       });
     },
@@ -520,10 +521,6 @@ function program4(depth0,data) {
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "description", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</span>\n				<span class='float-left'>");
-  hashTypes = {};
-  hashContexts = {};
-  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "parent.name", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   data.buffer.push("</span>\n				\n				<button class='float-right' ");
   hashContexts = {'target': depth0};
   hashTypes = {'target': "STRING"};
@@ -538,11 +535,11 @@ function program4(depth0,data) {
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "tasks.length", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</span>\n				<span class='float-right arrow-right'>--</span>\n				<span class='float-right'>");
+  data.buffer.push("</span>\n				<span class='float-right arrow-right'>--</span>\n				<span class='float-right time'>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "end", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</span>\n				<span class='float-right arrow-right'>></span>\n				<span class='float-right'>");
+  data.buffer.push("</span>\n				<span class='float-right arrow-right'>></span>\n				<span class='float-right time'>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "start", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));

@@ -63,14 +63,18 @@
 	vertical-align: middle;
 	display: block;
 	*{
-		height:inherit;
+		height:90%;
 	}
 	input,span,a{
 		margin-top:1px;
-		min-width:80px;
+		min-width:10px;
 		margin-right: 5px;
 		margin-left: 5px;
 		overflow: ellipses;
+	}
+	.arrow-right{
+		width:10px;
+		margin-right: 10px;
 	}
 	input{
 		margin-top:0px;
@@ -115,8 +119,6 @@ a{
 	text-align: center;
 }
 
-.arrow-right{
-	text-align: center;
-	font-size: 18px;
-	font-weight: bold;
+.time{
+	width:180px;
 }

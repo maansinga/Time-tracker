@@ -21,6 +21,7 @@ App.TaskController=Em.ObjectController.extend
 				store=@store
 
 				model.save().then (model)->
+					console.log 'created new model'
 					tasksController.reload()
 		completeTask:->
 				@get('model').toggleComplete()

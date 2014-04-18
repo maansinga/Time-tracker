@@ -16,7 +16,7 @@ App.TasksController=Em.ArrayController.extend
 		@set 'newTask',@store.createRecord 'task'
 		unless Em.isEmpty parentTask
 			console.log 'iufhidsuhfidsufhidsufhsiduhfidsufhsidufh'
-			@set 'parentTask',@store.find 'task',parentTask.get 'id'
+			parentTask.reload()
 			@get('newTask').set 'parent_id',parentTask.get 'id'
 		else
 			@set 'tasks',@store.find 'task',{parent_id:null}

@@ -1,5 +1,5 @@
 html, body {
-  font-family: ubuntu;
+  font-family: georgia;
   font-size: 14px;
   margin: 0px 0px;
   width: 100%;
@@ -100,13 +100,16 @@ input {
   vertical-align: middle;
   display: block; }
   .t-controls * {
-    height: inherit; }
+    height: 90%; }
   .t-controls input, .t-controls span, .t-controls a {
     margin-top: 1px;
-    min-width: 80px;
+    min-width: 10px;
     margin-right: 5px;
     margin-left: 5px;
     overflow: ellipses; }
+  .t-controls .arrow-right {
+    width: 10px;
+    margin-right: 10px; }
   .t-controls input {
     margin-top: 0px; }
 
@@ -142,10 +145,8 @@ a {
   border-bottom: solid 2px #eee;
   text-align: center; }
 
-.arrow-right {
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold; }
+.time {
+  width: 180px; }
 
 
 /*# sourceMappingURL=app.css.map*/
