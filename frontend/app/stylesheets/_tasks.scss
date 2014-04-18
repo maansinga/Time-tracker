@@ -108,6 +108,7 @@ button,.button{
 	border:solid 1px #ccc;
 	font-family: georgia;
 	outline: none;
+	outline: none;
 	&:hover{
 		border-color: #222;
 	}
@@ -127,10 +128,16 @@ a{
 
 .time{
 	width:180px;
+	font-size: 14px;
+	text-align: left;
 }
 
 .parent-task{
 	display: inline-block;
 	width: 100%;
 	background-color: #efefef;
+}
+
+.t-description,.t-name{
+	width: 325px;
 }

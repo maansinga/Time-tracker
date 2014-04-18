@@ -18,12 +18,15 @@ p {
 
 .heading {
   width: 100%;
-  color: #222;
+  color: #fff;
   font-weight: bold;
   margin-top: 0px;
   padding-left: 10px;
   font-size: 144px;
-  text-align: center; }
+  text-align: center;
+  background-color: #222;
+  padding-top: 20px;
+  padding-bottom: 20px; }
 
 .main-content {
   width: 80%;
@@ -141,6 +144,7 @@ button, .button {
   border-radius: 40px;
   border: solid 1px #ccc;
   font-family: georgia;
+  outline: none;
   outline: none; }
   button:hover, .button:hover {
     border-color: #222; }
@@ -155,12 +159,17 @@ a {
   font-weight: 700; }
 
 .time {
-  width: 180px; }
+  width: 180px;
+  font-size: 14px;
+  text-align: left; }
 
 .parent-task {
   display: inline-block;
   width: 100%;
   background-color: #efefef; }
+
+.t-description, .t-name {
+  width: 325px; }
 
 
 /*# sourceMappingURL=app.css.map*/

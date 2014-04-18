@@ -8,9 +8,9 @@
 		{{else}}
 			
 			<div class='t-controls'>
-				{{#link-to 'task' this class='t-link-task'}}{{name}}{{/link-to}}
+				{{#link-to 'task' this class='t-link-task t-name'}}{{name}}{{/link-to}}
 				<br/>
-				<span class='float-left'>{{description}}</span>
+				<span class='float-left t-description'>{{description}}</span>
 				
 				<button class='float-right' {{action 'edit' target='view'}}>Edit</button>
 				<button class='float-right' {{action 'destroyTask'}}>Delete</button>
