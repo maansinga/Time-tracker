@@ -1,15 +1,13 @@
 .task{
 	position: relative;
 	padding: 3px 10px;
-	padding-bottom: 0px;
+	padding-bottom: 10px;
 	width: calc(100% - 20px);
-	height: 25px;
-	background-color: #CCC;
 	margin: 1px 0px;
 	float: left;
-	border: 1px solid #AAA;
-	border-radius: 2px;
-	border-bottom: solid 2px rgba(255, 78, 78, 1);
+	display: inline-block;
+
+	border-bottom:dotted 1px #ccc;
 	h3{
 		text-align: center;
 		margin-top:0px;
@@ -31,7 +29,13 @@
 		display: inline-block;
 	}
 	&.completed{
-		border-bottom: solid 2px #389957;
+		background-image: url('/images/tick.png');
+		background-size: 30px 30px;
+		background-repeat: no-repeat;
+		background-position-y: 5px;
+		.t-controls a.t-link-task{
+			margin-left:20px;
+		}
 	}
 }
 .float-left{
@@ -58,14 +62,11 @@
 }
 
 .t-controls{
-	height: 100%;
 	width: 100%;
+	display: inline-block;
 	vertical-align: middle;
-	display: block;
-	*{
-		height:90%;
-	}
-	input,span,a{
+
+	span,a{
 		margin-top:1px;
 		min-width:10px;
 		margin-right: 5px;
@@ -76,49 +77,60 @@
 		width:10px;
 		margin-right: 10px;
 	}
-	input{
-		margin-top:0px;
+	textarea,input{
+		width:300px;
+		height:30px;
+		margin: 10px;
+		outline: none;
+		border:solid 1px #ccc;
+		border-bottom-width: 2px;
+		border-right-width: 2px;
+		padding:2.5px;
+		color:#444;
+		font-size: 16px;
+		font-family: georgia;
+	}
+	textarea{
+		height:100px;
 	}
 }
-
+.t-link-task{
+	font-size: 24px;
+}
 button,.button{
-	max-width: 100px;
-	min-width: 60px;
-	min-height:20px;
-	padding-top: 0px;
-	padding-bottom: 0px;
-	line-height: 1;
-	margin-top: 0px;
+	height:40px;
+	max-width:120px;
+	font-size: 16px;
+	background-color: #fff;
+	padding-top:2.5px;
+	padding-bottom: 2.5px;
+	border-radius: 40px;
+	border:solid 1px #ccc;
+	font-family: georgia;
 	outline: none;
-	background-color: #4D485F;
-	border: none;
-	margin-left: 2px;
-	margin-right: 2px;
-	color: #fff;
-	font-weight: bold;
-	font-size: 10px;
-
 	&:hover{
-		text-shadow:0px 0px 1px #222;
-		box-shadow: 0px 0px 2px #aaa;
+		border-color: #222;
 	}
 
 	&:active{
-		box-shadow: inset 0px 0px 2px #2E8F40;
-		color: #fff;
-		text-shadow:0px 0px 1px 2px #222;
+		background-color: #222;
+		color:#ccc;
 	}
 }
 
 a{
-	text-decoration: none;
-	color:#fff;
-	text-shadow:0px 0px 1px #222;
-	font-size: 14px;
-	border-bottom:solid 2px #eee;
+	text-decoration: underline;
+	color:#222;
 	text-align: center;
+	font-weight: 700;
 }
 
 .time{
 	width:180px;
+}
+
+.parent-task{
+	display: inline-block;
+	width: 100%;
+	background-color: #efefef;
 }

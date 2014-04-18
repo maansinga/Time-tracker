@@ -8,14 +8,15 @@
 		{{else}}
 			
 			<div class='t-controls'>
-				<button class='float-left' {{action 'complete' target='view'}}>{{controller.completeButtonMessage}}</button>
-				{{#link-to 'task' this class='t-link-task float-left'}}{{name}}{{/link-to}}
+				{{#link-to 'task' this class='t-link-task'}}{{name}}{{/link-to}}
+				<br/>
 				<span class='float-left'>{{description}}</span>
 				
 				<button class='float-right' {{action 'edit' target='view'}}>Edit</button>
 				<button class='float-right' {{action 'destroyTask'}}>Delete</button>
-				<span class='float-right'>{{tasks.length}}</span>
-				<span class='float-right arrow-right'>--</span>
+				<button class='float-right' {{action 'complete' target='view'}}>{{controller.completeButtonMessage}}</button>
+
+				<span class='float-right'>'{{tasks.length}}' Subtasks</span>
 				<span class='float-right time'>{{end}}</span>
 				<span class='float-right arrow-right'>></span>
 				<span class='float-right time'>{{start}}</span>

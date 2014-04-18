@@ -1,7 +1,10 @@
 {{#if controller.parentTask}}
-	{{#link-to 'tasks' class='float-left'}}Tasks Home{{/link-to}}<br/><br/>
-	<h2>Parent task</h2>
-	{{render 'task' parentTask}}
+	
+		{{#link-to 'tasks' class='float-left'}}Tasks Home{{/link-to}}<br/><br/>
+		<h2>Parent task</h2>
+		<div class='parent-task'>
+			{{render 'task' parentTask}}
+		</div>
 	<h2>Sub tasks</h2>
 {{else}}
 	<h2>Main tasks</h2>

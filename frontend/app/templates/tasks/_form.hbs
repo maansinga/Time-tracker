@@ -1,7 +1,7 @@
 <div class='form'>
 	<div class="t-controls">
-		{{input value=name class='float-left' placeholder='Name'}}
-		{{input value=description class='float-left' placeholder='Description'}}
+		{{input value=name placeholder='Name'}}<br/>
+		{{view Em.TextArea value=description placeholder='Description'}}
 		<button class='button float-right' {{action 'cancel' target='view'}}>Cancel</button>
 		<button class='button float-right' {{action 'edit' target='view'}}>Save</button>
 	</div>
