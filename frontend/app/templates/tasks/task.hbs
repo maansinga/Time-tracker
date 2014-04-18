@@ -10,11 +10,16 @@
 			<div class='t-controls'>
 				<button class='float-left' {{action 'complete' target='view'}}>{{controller.completeButtonMessage}}</button>
 				{{#link-to 'task' this class='t-link-task float-left'}}{{name}}{{/link-to}}
-				<span class='t-description float-left'>{{description}}</span>
-				<span class='t-parentname float-left'>{{parent.name}}</span>
-
+				<span class='float-left'>{{description}}</span>
+				<span class='float-left'>{{parent.name}}</span>
+				
 				<button class='float-right' {{action 'edit' target='view'}}>Edit</button>
 				<button class='float-right' {{action 'destroyTask'}}>Delete</button>
+				<span class='float-right'>{{tasks.length}}</span>
+				<span class='float-right arrow-right'>--</span>
+				<span class='float-right'>{{end}}</span>
+				<span class='float-right arrow-right'>></span>
+				<span class='float-right'>{{start}}</span>
 			</div>
 		{{/if}}
 	{{else}}

@@ -102,7 +102,7 @@ input {
   .t-controls * {
     height: inherit; }
   .t-controls input, .t-controls span, .t-controls a {
-    margin-top: 2px;
+    margin-top: 1px;
     min-width: 80px;
     margin-right: 5px;
     margin-left: 5px;
@@ -141,6 +141,11 @@ a {
   font-size: 14px;
   border-bottom: solid 2px #eee;
   text-align: center; }
+
+.arrow-right {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold; }
 
 
 /*# sourceMappingURL=app.css.map*/

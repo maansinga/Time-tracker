@@ -131,12 +131,14 @@ App.TasksController = Em.ArrayController.extend({
     } else {
       return this.get('parentTask.tasks');
     }
-  }).property('parentTask', 'parentTask.tasks.length'),
+  }).property('parentTask', 'parentTask.tasks.length', 'newTask.id'),
   reload: function() {
     var parentTask;
     parentTask = this.get('parentTask');
     this.set('newTask', this.store.createRecord('task'));
     if (!Em.isEmpty(parentTask)) {
+      console.log('iufhidsuhfidsufhidsufhsiduhfidsufhsidufh');
+      this.set('parentTask', this.store.find('task', parentTask.get('id')));
       return this.get('newTask').set('parent_id', parentTask.get('id'));
     } else {
       return this.set('tasks', this.store.find('task', {
@@ -163,14 +165,16 @@ App.TaskController = Em.ObjectController.extend({
   }).property('model.completed'),
   actions: {
     saveTask: function() {
-      var idExists, store, tasksController;
-      idExists = Em.isEmpty(this.get('model.id'));
+      var idExists, model, store, tasksController;
+      model = this.get('model');
+      idExists = !Em.isEmpty(model.get('id'));
+      if (!idExists) {
+        model.set('startTime', new Date());
+      }
       tasksController = this.get('controllers.tasks');
       store = this.store;
-      return this.get('model').save().then(function(model) {
-        if (idExists) {
-          return tasksController.reload();
-        }
+      return model.save().then(function(model) {
+        return tasksController.reload();
       });
     },
     completeTask: function() {
@@ -225,14 +229,33 @@ App.Task = DS.Model.extend({
     async: true,
     inverse: 'parent'
   }),
+  startTime: DS.attr('date'),
+  endTime: DS.attr('date'),
   isCompleted: (function() {
     return this.get('completed');
   }).property('completed'),
+  start: (function() {
+    if (!Em.isEmpty(this.get('startTime'))) {
+      return moment(this.get('startTime')).format('MMMM Do YYYY, h:mm:ss a');
+    } else {
+      return '-';
+    }
+  }).property('startTime'),
+  end: (function() {
+    if (!Em.isEmpty(this.get('endTime'))) {
+      return moment(this.get('endTime')).format('MMMM Do YYYY, h:mm:ss a');
+    } else {
+      return '-';
+    }
+  }).property('endTime'),
   isNew: (function() {
     return Em.isEmpty(this.get('id'));
   }).property('id'),
   toggleComplete: function() {
-    this.set('completed', !this.get('completed'));
+    this.setProperties({
+      completed: !this.get('completed'),
+      endTime: new Date()
+    });
     return this.save();
   }
 });
@@ -493,15 +516,15 @@ function program4(depth0,data) {
   },inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   stack2 = ((stack1 = helpers['link-to'] || (depth0 && depth0['link-to'])),stack1 ? stack1.call(depth0, "task", "", options) : helperMissing.call(depth0, "link-to", "task", "", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
-  data.buffer.push("\n				<span class='t-description float-left'>");
+  data.buffer.push("\n				<span class='float-left'>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "description", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</span>\n				<span class='t-parentname float-left'>");
+  data.buffer.push("</span>\n				<span class='float-left'>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "parent.name", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</span>\n\n				<button class='float-right' ");
+  data.buffer.push("</span>\n				\n				<button class='float-right' ");
   hashContexts = {'target': depth0};
   hashTypes = {'target': "STRING"};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "edit", {hash:{
@@ -511,7 +534,19 @@ function program4(depth0,data) {
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "destroyTask", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push(">Delete</button>\n			</div>\n		");
+  data.buffer.push(">Delete</button>\n				<span class='float-right'>");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "tasks.length", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</span>\n				<span class='float-right arrow-right'>--</span>\n				<span class='float-right'>");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "end", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</span>\n				<span class='float-right arrow-right'>></span>\n				<span class='float-right'>");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "start", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</span>\n			</div>\n		");
   return buffer;
   }
 function program5(depth0,data) {

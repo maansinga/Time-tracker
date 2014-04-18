@@ -16,6 +16,7 @@ exports.config =
           'vendor/javascripts/handlebars-1.1.2.js'
           'vendor/javascripts/ember-1.5.0.js'
           'vendor/javascripts/ember-data.js'
+          'vendor/javascripts/moment.min.js'
           ]
     stylesheets:
       defaultExtension: 'scss'
@@ -40,6 +41,7 @@ developmentVendorJavascripts = [
   'handlebars-1.1.2.js'
   'ember-1.5.0.js'
   'ember-data.js'
+  'moment.min.js'
 ]
 
 productionVendorJavascripts = [
@@ -47,6 +49,7 @@ productionVendorJavascripts = [
   'handlebars-1.1.2.js'
   'ember-1.5.0.js'
   'ember-data.js'
+  'moment.min.js'
 ]
 
 isDevelopmentVendorFile = (filePath) ->

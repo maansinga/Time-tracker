@@ -11,12 +11,17 @@ App.TaskController=Em.ObjectController.extend
 
 	actions:
 		saveTask:->
-				idExists=Em.isEmpty @get 'model.id'
+				model=@get 'model'
+				idExists=!Em.isEmpty model.get 'id'
+				
+				unless idExists
+					model.set 'startTime',new Date()
+
 				tasksController=@get('controllers.tasks')
 				store=@store
-				@get('model').save().then (model)->
-					if idExists
-						tasksController.reload()
+
+				model.save().then (model)->
+					tasksController.reload()
 		completeTask:->
 				@get('model').toggleComplete()
 		destroyTask:->
